@@ -86,7 +86,7 @@ func formatTime(t *time.Time) string {
 
 func getDuration(started time.Time) string {
 	duration := time.Now().Sub(started)
-	return fmt.Sprintf("%dd %d:%d:%d",
+	return fmt.Sprintf("%dd %02d:%02d:%02d",
 		int(duration.Hours())/24,
 		int(duration.Hours())%24,
 		int(duration.Minutes())%60,
