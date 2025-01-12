@@ -19,22 +19,25 @@ func main() {
 	}
 
 	// prepare links
-	fmt.Printf("%s Prepairing links...\n", formatTime(nil))
-	links, err := getSourceLinks()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("%s %d links readed\n", formatTime(nil), len(links))
+	links := make([]string, 0)
+	{
+		fmt.Printf("%s Prepairing links...\n", formatTime(nil))
+		sourse_links, err := getSourceLinks()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("%s %d links readed\n", formatTime(nil), len(sourse_links))
 
-	// removing duplicates
-	fmt.Printf("%s Searching for duplicates...\n", formatTime(nil))
-	parsed_links, err := getParsedLinks(db)
-	if err != nil {
-		panic(err)
-	}
-	links, err = removeDups(parsed_links, links)
-	if err != nil {
-		panic(err)
+		// removing duplicates
+		fmt.Printf("%s Searching for duplicates...\n", formatTime(nil))
+		parsed_links, err := getParsedLinks(db)
+		if err != nil {
+			panic(err)
+		}
+		links, err = removeDups(parsed_links, sourse_links)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	// scraping links

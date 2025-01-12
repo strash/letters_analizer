@@ -54,11 +54,11 @@ func removeDups(parsed_links []string, links []string) ([]string, error) {
 	dups_count_ch := make(chan int)
 	dups_count := 0
 
-	scraped_count := len(parsed_links)
+	parsed_count := len(parsed_links)
 
 	for _, target_link := range parsed_links {
-		fmt.Printf("\r%s %d/%d duplicates", formatTime(nil), dups_count, scraped_count)
-		go searchForDups(target_link, links, cleaned_links_ch, dups_count_ch)
+		fmt.Printf("\r%s %d/%d duplicates", formatTime(nil), dups_count, parsed_count)
+		go searchForDups(target_link, cleaned_links, cleaned_links_ch, dups_count_ch)
 		dups_count += <-dups_count_ch
 		cleaned_links = <-cleaned_links_ch
 	}

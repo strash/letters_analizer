@@ -33,9 +33,9 @@ func prepareDB() (*sql.DB, error) {
 	}
 
 	if _, err := db.Exec(fmt.Sprintf(`
-	PRAGMA journal_mode=WAL;
-	PRAGMA wal_checkpoint(TRUNCATE);
-	PRAGMA wal_autocheckpoint=50;
+	--PRAGMA journal_mode=WAL;
+	--PRAGMA wal_checkpoint(TRUNCATE);
+	--PRAGMA wal_autocheckpoint=50;
 	VACUUM;
 
 	BEGIN TRANSACTION;
@@ -203,7 +203,7 @@ func insertWithPosition(db *sql.DB, table string, items []entry) error {
 
 func cleanUp(db *sql.DB) error {
 	if _, err := db.Exec(`
-		PRAGMA wal_checkpoint(TRUNCATE);
+		--PRAGMA wal_checkpoint(TRUNCATE);
 		PRAGMA shrink_memory;
 		PRAGMA optimize;
 		VACUUM;
