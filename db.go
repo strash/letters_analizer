@@ -19,12 +19,12 @@ const (
 )
 
 func prepareDB() (*sql.DB, error) {
-	if _, err := os.Stat(dsn); !os.IsExist(err) {
+	if _, err := os.Stat(dsn); err != nil {
 		file, err := os.Create(dsn)
-		defer file.Close()
 		if err != nil {
 			return nil, err
 		}
+		file.Close()
 	}
 
 	db, err := sql.Open("sqlite", dsn)
@@ -130,7 +130,7 @@ func prepareDB() (*sql.DB, error) {
 }
 
 func getParsedLinks(db *sql.DB) ([]string, error) {
-	rows, err := db.Query(fmt.Sprintf("SELECT link FROM %s;", links_table))
+	rows, err := db.Query(fmt.Sprintf("SELECT * FROM %s;", links_table))
 	if err != nil {
 		return nil, err
 	}
@@ -147,7 +147,7 @@ func getParsedLinks(db *sql.DB) ([]string, error) {
 
 func insertLink(db *sql.DB, link string) error {
 	_, err := db.Exec(
-		fmt.Sprintf("INSERT INTO %s (link) VALUES (?)", links_table),
+		fmt.Sprintf("INSERT INTO %s (link) VALUES (?);", links_table),
 		link,
 	)
 	return err
@@ -205,7 +205,8 @@ func cleanUp(db *sql.DB) error {
 	if _, err := db.Exec(`
 		PRAGMA wal_checkpoint(TRUNCATE);
 		PRAGMA shrink_memory;
-		PRAGMA otimize;
+		PRAGMA optimize;
+		VACUUM;
 		`); err != nil {
 		return err
 	}

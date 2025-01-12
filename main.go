@@ -49,6 +49,8 @@ func main() {
 		if err = parse(db, article); err != nil {
 			panic(err)
 		}
+		scraped_count++
+		report(started, scraped_count, total_count)
 
 		comments_link, err := url.JoinPath(link, "comments")
 		if err != nil {
@@ -65,7 +67,7 @@ func main() {
 		if err := insertLink(db, link); err != nil {
 			panic(err)
 		}
-		scraped_count += 2
+		scraped_count++
 		report(started, scraped_count, total_count)
 	}
 
