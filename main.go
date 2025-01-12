@@ -86,7 +86,7 @@ func formatTime(t *time.Time) string {
 
 func getDuration(started time.Time) string {
 	duration := time.Now().Sub(started)
-	return fmt.Sprintf("%d days %d hours %d minutes and %d seconds",
+	return fmt.Sprintf("%dd %d:%d:%d",
 		int(duration.Hours())/24,
 		int(duration.Hours())%24,
 		int(duration.Minutes())%60,
@@ -95,9 +95,10 @@ func getDuration(started time.Time) string {
 }
 
 func report(started time.Time, scraped_count int, total_count int) {
-	fmt.Printf("\r%s %d%% %d/%d scraped in %s",
+	percent := float32(scraped_count) * 100.0 / float32(total_count)
+	fmt.Printf("\r%s %.2f%% %d/%d scraped in %s",
 		formatTime(nil),
-		int(scraped_count*100/total_count),
+		percent,
 		scraped_count, total_count,
 		getDuration(started),
 	)
