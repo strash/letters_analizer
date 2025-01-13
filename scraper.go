@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"regexp"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/net/html"
@@ -18,20 +20,32 @@ var (
 	br_regexp  *regexp.Regexp = regexp.MustCompile(br_query)
 )
 
-func visit(uri string, is_article bool) ([]string, error) {
+func visit_safely(uri string, is_article bool, content_ch chan []string) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("\nRecovering from: %v\n", r)
+			time.Sleep(5 * time.Minute)
+		}
+	}()
+
+	visit(uri, is_article, content_ch)
+}
+
+func visit(uri string, is_article bool, content_ch chan []string) {
 	res, err := http.Get(uri)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return nil, nil
+		content_ch <- make([]string, 0)
+		return
 	}
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	content := make([]string, 0)
@@ -80,7 +94,7 @@ func visit(uri string, is_article bool) ([]string, error) {
 			}
 		}
 	}
-	return content, nil
+	content_ch <- content
 }
 
 func findContent(s *goquery.Selection, content *[]string, ch chan string) {

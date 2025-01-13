@@ -43,41 +43,41 @@ func main() {
 	// scraping links
 	total_count := len(links) * 2 // plus comments links
 	scraped_count := 0
+	content_ch := make(chan []string)
 	fmt.Printf("\n%s Start scraping...\n", formatTime(nil))
 	for _, link := range links {
-		article, err := visit(link, true)
+		comments_link, err := url.JoinPath(link, "comments")
 		if err != nil {
 			panic(err)
 		}
+
+		go visit_safely(link, true, content_ch)
+		go visit_safely(comments_link, false, content_ch)
+		article := <-content_ch
+		comments := <-content_ch
+
 		if err = parse(db, article); err != nil {
 			panic(err)
 		}
 		scraped_count++
 		report(started, scraped_count, total_count)
 
-		comments_link, err := url.JoinPath(link, "comments")
-		if err != nil {
-			panic(err)
-		}
-		comments, err := visit(comments_link, false)
-		if err != nil {
-			panic(err)
-		}
 		if err = parse(db, comments); err != nil {
-			panic(err)
-		}
-
-		if err := insertLink(db, link); err != nil {
 			panic(err)
 		}
 		scraped_count++
 		report(started, scraped_count, total_count)
+
+		if err := insertLink(db, link); err != nil {
+			panic(err)
+		}
 	}
 
 	if err = cleanUp(db); err != nil {
 		panic(err)
 	}
 
+	time.Sleep(1 * time.Second)
 	fmt.Printf("\n%s Done scraping!\n", formatTime(nil))
 }
 
