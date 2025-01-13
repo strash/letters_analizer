@@ -1,4 +1,4 @@
-module github.com/strash/temp
+module github.com/strash/letters_analizer
 
 go 1.23.4
 
