@@ -34,6 +34,7 @@ func visit_safely(uri string, is_article bool, content_ch chan []string) {
 func visit(uri string, is_article bool, content_ch chan []string) {
 	res, err := http.Get(uri)
 	if err != nil {
+		content_ch <- make([]string, 0)
 		panic(err)
 	}
 	defer res.Body.Close()
@@ -45,6 +46,7 @@ func visit(uri string, is_article bool, content_ch chan []string) {
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
+		content_ch <- make([]string, 0)
 		panic(err)
 	}
 
