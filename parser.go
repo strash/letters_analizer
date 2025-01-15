@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	insert_batch_size int = 900
+	insert_batch_size int = 2000
 
 	ru_strings_pattern string = `([«"]?[а-яА-ЯёЁ]+(?:[-–—]?[а-яА-ЯёЁ]*[»".,:;!?]?)?)`
 	ru_word_pattern    string = `([а-яА-ЯёЁ]+)`
